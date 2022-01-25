@@ -129,12 +129,12 @@ export default {
             Clear App
           </v-btn>
 
-          <v-btn color="warning mr-3 mb-3" @click="basicExport()">
-            Basic Export
+          <v-btn color="primary mr-3 mb-3" @click="basicExport()">
+            Store Export
           </v-btn>
 
-          <v-btn color="warning mr-3 mb-3" @click="advancedExport()">
-            Advanced Export
+          <v-btn color="info mr-3 mb-3" @click="advancedExport()">
+            Exercise CSV Export
           </v-btn>
         </v-container>
       </v-card-actions>

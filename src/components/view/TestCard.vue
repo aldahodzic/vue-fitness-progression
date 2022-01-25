@@ -38,7 +38,7 @@ export default {
       let tempElement = document.createElement('a')
       tempElement.setAttribute(
         'href',
-        'data:text/plain;charset=utf-8, ' + encodeURIComponent(textInput)
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(textInput)
       )
       tempElement.setAttribute('download', filename)
       document.body.appendChild(tempElement)
@@ -46,8 +46,69 @@ export default {
       document.body.removeChild(tempElement)
     },
 
+    /**
+     * Using this as a way to extract my legacy fitness data in a more useful
+     * format for viewing before I rewrite this app.
+     */
     advancedExport() {
-      confirm('Not Implemented')
+      if (confirm('Download exercise record CSV?')) {
+        this.getExerciseRecordsCSV()
+      }
+    },
+
+    getExerciseRecordsCSV() {
+      /**
+       * Try refactoring the ExerciseRecords JSON:
+       * - Remove id
+       * - Remove note
+       * - Replace exerciseId with Exercise name
+       */
+      let myRecords = this.$store.getters['exerciseRecords/getState']
+      let myExercises = this.$store.getters['exercises/getState']
+
+      let cleanedRecords = myRecords.map((r) => {
+        // Use the exerciseId to find the exercise name
+        const theExercise = myExercises.find((e) => e.id === r.exerciseId)
+        const set1weight = `${r.sets[0]?.weight ?? '0'}`
+        const set1reps = `${r.sets[0]?.reps ?? '0'}`
+        const set2weight = `${r.sets[1]?.weight ?? '0'}`
+        const set2reps = `${r.sets[1]?.reps ?? '0'}`
+        const set3weight = `${r.sets[2]?.weight ?? '0'}`
+        const set3reps = `${r.sets[2]?.reps ?? '0'}`
+        const set4weight = `${r.sets[3]?.weight ?? '0'}`
+        const set4reps = `${r.sets[3]?.reps ?? '0'}`
+        const set5weight = `${r.sets[4]?.weight ?? '0'}`
+        const set5reps = `${r.sets[4]?.reps ?? '0'}`
+
+        return {
+          name: theExercise.name,
+          createdAt: r.createdAt,
+          set1weight,
+          set1reps,
+          set2weight,
+          set2reps,
+          set3weight,
+          set3reps,
+          set4weight,
+          set4reps,
+          set5weight,
+          set5reps,
+        }
+      })
+
+      console.log(cleanedRecords)
+
+      // Exercise Name, Date, Set 1 Weight, Set 1 Reps, Set 2 Weight, Set 2 Reps, ...
+      let CSVText =
+        'Exercise Name,Date,Set 1 Weight,Set 1 Reps,Set 2 Weight,Set 2 Reps,Set 3 Weight,Set 3 Reps,Set 4 Weight,Set 4 Reps,Set 5 Weight,Set 5 Reps\n'
+
+      cleanedRecords.forEach((r) => {
+        CSVText += `${r.name},${r.createdAt},${r.set1weight},${r.set1reps},${r.set2weight},${r.set2reps},${r.set3weight},${r.set3reps},${r.set4weight},${r.set4reps},${r.set5weight},${r.set5reps}\n`
+      })
+
+      console.log(CSVText)
+
+      this.downloadFile('Exercise-Records-CSV.txt', CSVText)
     },
   },
 }
